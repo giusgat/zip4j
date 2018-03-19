@@ -52,6 +52,7 @@ import net.lingala.zip4j.zip.ZipEngine;
  */
 public class ZipFile {
 
+    private static String VERSIONE ="1.0.0";
     private String file;
     private int mode;
     private ZipModel zipModel;

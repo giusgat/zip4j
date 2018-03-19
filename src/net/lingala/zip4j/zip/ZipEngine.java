@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.SplitOutputStream;
@@ -40,6 +42,7 @@ import net.lingala.zip4j.util.Zip4jUtil;
 
 public class ZipEngine {
 
+    private final static Logger LOGGER = Logger.getLogger(ZipEngine.class.getName());
     private ZipModel zipModel;
 
     public ZipEngine(ZipModel zipModel) throws ZipException {
@@ -300,6 +303,7 @@ public class ZipEngine {
         if (folderList == null || parameters == null) {
             throw new ZipException("one of the input parameters is null, cannot add folder to zip");
         }
+
         ArrayList totalFileList = new ArrayList();
         for (int i = 0; i < folderList.size(); i++) {
             File folder = folderList.get(i);
@@ -314,9 +318,9 @@ public class ZipEngine {
             } else {
                 rootFolderPath = folder.getAbsolutePath();
             }
-
+            //logger.log(Level.INFO, "**********1**" + rootFolderPath);
             parameters.setDefaultFolderPath(rootFolderPath);
-
+            //logger.log(Level.INFO, "**********2**" + rootFolderPath);
             ArrayList fileList = Zip4jUtil.getFilesInDirectoryRec(folder, parameters.isReadHiddenFiles());
 
             if (parameters.isIncludeRootFolder()) {
