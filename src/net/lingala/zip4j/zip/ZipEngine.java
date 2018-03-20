@@ -518,7 +518,6 @@ public class ZipEngine {
                 }
             }
         }
-
         return totalWork;
     }
 }
