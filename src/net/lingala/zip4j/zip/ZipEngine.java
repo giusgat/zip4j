@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.SplitOutputStream;
@@ -42,7 +40,6 @@ import net.lingala.zip4j.util.Zip4jUtil;
 
 public class ZipEngine {
 
-    private final static Logger LOGGER = Logger.getLogger(ZipEngine.class.getName());
     private ZipModel zipModel;
 
     public ZipEngine(ZipModel zipModel) throws ZipException {
@@ -134,7 +131,6 @@ public class ZipEngine {
                 ZipParameters fileParameters = (ZipParameters) parameters.clone();
 
                 progressMonitor.setFileName(((File) fileList.get(i)).getAbsolutePath());
-
                 if (!((File) fileList.get(i)).isDirectory()) {
                     if (fileParameters.isEncryptFiles() && fileParameters.getEncryptionMethod() == Zip4jConstants.ENC_METHOD_STANDARD) {
                         progressMonitor.setCurrentOperation(ProgressMonitor.OPERATION_CALC_CRC);
@@ -152,13 +148,22 @@ public class ZipEngine {
                         fileParameters.setCompressionMethod(Zip4jConstants.COMP_STORE);
                     }
                 }
-
+                
+                String fileToProcess = ((File) fileList.get(i)).getAbsolutePath();
+                
+                if (!fileToProcess.startsWith(fileParameters.getDefaultFolderPath())) {
+                    for (int x = 0; x < fileParameters.getFolderPathSize(); x++) {
+                        if (fileToProcess.startsWith(fileParameters.getFolderPath(x))) {
+                            fileParameters.setDefaultFolderPath(fileParameters.getFolderPath(x));
+                            break;
+                        }
+                    }
+                }
                 outputStream.putNextEntry((File) fileList.get(i), fileParameters);
                 if (((File) fileList.get(i)).isDirectory()) {
                     outputStream.closeEntry();
                     continue;
                 }
-
                 inputStream = new FileInputStream((File) fileList.get(i));
 
                 while ((readLen = inputStream.read(readBuff)) != -1) {
@@ -167,11 +172,9 @@ public class ZipEngine {
                         progressMonitor.setState(ProgressMonitor.STATE_READY);
                         return;
                     }
-
                     outputStream.write(readBuff, 0, readLen);
                     progressMonitor.updateWorkCompleted(readLen);
                 }
-
                 outputStream.closeEntry();
 
                 if (inputStream != null) {
@@ -318,9 +321,9 @@ public class ZipEngine {
             } else {
                 rootFolderPath = folder.getAbsolutePath();
             }
-            //logger.log(Level.INFO, "**********1**" + rootFolderPath);
+
             parameters.setDefaultFolderPath(rootFolderPath);
-            //logger.log(Level.INFO, "**********2**" + rootFolderPath);
+            parameters.addFolderPath(rootFolderPath);
             ArrayList fileList = Zip4jUtil.getFilesInDirectoryRec(folder, parameters.isReadHiddenFiles());
 
             if (parameters.isIncludeRootFolder()) {

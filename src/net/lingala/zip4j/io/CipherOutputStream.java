@@ -147,7 +147,6 @@ public class CipherOutputStream extends BaseOutputStream {
 					}
 				}
 			} 
-			
 			crc.reset();
 		} catch (CloneNotSupportedException e) {
 			throw new ZipException(e);

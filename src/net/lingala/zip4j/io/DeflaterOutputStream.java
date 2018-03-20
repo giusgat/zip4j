@@ -28,7 +28,7 @@ import net.lingala.zip4j.util.InternalZipConstants;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 public class DeflaterOutputStream extends CipherOutputStream {
-	
+	   
 	private byte[] buff;
 	protected Deflater deflater;
 	private boolean firstBytesRead;
@@ -41,7 +41,7 @@ public class DeflaterOutputStream extends CipherOutputStream {
 	}
 	
 	public void putNextEntry(File file, ZipParameters zipParameters)
-			throws ZipException {
+			throws ZipException {    
 		super.putNextEntry(file, zipParameters);
 		if (zipParameters.getCompressionMethod() == Zip4jConstants.COMP_DEFLATE) {
 			deflater.reset();
